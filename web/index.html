@@ -7,39 +7,109 @@
 </head>
 <body>
   <div id="app" class="max-w-5xl mx-auto px-6 py-10">
-    <header class="mb-8">
-      <h1 class="text-2xl font-bold">AI Cybersecurity DevOps Lab</h1>
-      <p class="text-gray-400 mt-1">
-        Local, air-gapped multi-agent workflow: Docker → Promtail/Loki → Trivy → Ansible → Qwen agents.
-        Everything on this page runs against <code>127.0.0.1</code> only.
-      </p>
+    <header class="mb-8 flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <h1 class="text-2xl font-bold">AI Cybersecurity DevOps Lab</h1>
+        <p class="text-gray-400 mt-1 max-w-2xl">
+          A local, air-gapped multi-agent training lab for AI-driven DevSecOps —
+          sandboxed inspection, an AI-assisted vulnerability→remediation pipeline, and
+          active-defense simulation, all running against a local model.
+        </p>
+      </div>
+      <nav class="flex gap-1 bg-surface rounded-lg p-1 shrink-0">
+        <button id="tab-overview" class="tab-btn px-4 py-1.5 rounded-md text-sm font-medium">Overview</button>
+        <button id="tab-dashboard" class="tab-btn px-4 py-1.5 rounded-md text-sm font-medium">Live Dashboard</button>
+      </nav>
     </header>
 
-    <section class="mb-10">
-      <h2 class="text-lg font-semibold mb-3">Architecture</h2>
-      <div id="architecture-diagram" class="bg-surface rounded-lg p-4 overflow-x-auto"></div>
-    </section>
+    <!-- ============================= OVERVIEW ============================= -->
+    <div id="view-overview">
 
-    <section class="mb-10">
-      <h2 class="text-lg font-semibold mb-3">Agent Status</h2>
-      <div id="agent-status" class="grid gap-3 sm:grid-cols-2"></div>
-    </section>
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold mb-3">Purpose</h2>
+        <p class="text-sm text-gray-400 max-w-3xl leading-relaxed">
+          Hands-on fluency in AI-assisted DevOps security — deployment automation, log telemetry,
+          vulnerability scanning, and gated auto-remediation — using only local, open-weight
+          models and permissively-licensed tooling. No cloud API, no telemetry, nothing leaves
+          this machine.
+        </p>
+      </section>
 
-    <section class="mb-10">
-      <h2 class="text-lg font-semibold mb-3">Active CVE Alerts</h2>
-      <div id="cve-alerts" class="bg-surface rounded-lg divide-y divide-gray-800"></div>
-    </section>
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold mb-3">What this demonstrates</h2>
+        <div class="grid gap-3 sm:grid-cols-3">
+          <div class="bg-surface rounded-lg p-4">
+            <div class="text-xs font-semibold text-accent mb-1">STEP 1 — SANDBOX BOUNDARY</div>
+            <p class="text-sm text-gray-300">Untrusted log content is inspected inside a disposable, network-isolated Docker container — no network, read-only root, dropped capabilities — before an LLM ever summarizes it.</p>
+          </div>
+          <div class="bg-surface rounded-lg p-4">
+            <div class="text-xs font-semibold text-accent mb-1">STEP 2 — AI-DRIVEN PIPELINE</div>
+            <p class="text-sm text-gray-300">Monitor → Patcher → Validator: a vulnerability scan gets triaged by a local LLM, a fix gets proposed, and nothing executes without a deterministic policy check plus human approval.</p>
+          </div>
+          <div class="bg-surface rounded-lg p-4">
+            <div class="text-xs font-semibold text-accent mb-1">STEP 3 — ACTIVE DEFENSE</div>
+            <p class="text-sm text-gray-300">A simulated traffic generator vs. a defensive swarm that blocks IPs and rotates mock credentials in response — the detect → decide → act → log loop, fully local.</p>
+          </div>
+        </div>
+      </section>
 
-    <section class="mb-10">
-      <h2 class="text-lg font-semibold mb-3">Remediation Log</h2>
-      <div id="remediation-log" class="bg-surface rounded-lg divide-y divide-gray-800"></div>
-    </section>
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold mb-3">Architecture</h2>
+        <div id="architecture-diagram" class="bg-surface rounded-lg p-4 overflow-x-auto"></div>
+      </section>
 
-    <section>
-      <h2 class="text-lg font-semibold mb-3">Counter-Swarm: Active Defense Log</h2>
-      <p class="text-xs text-gray-500 mb-3">Simulated traffic vs. a defensive swarm — synthetic IPs, mock tokens/keys, local state file only. No real firewall or credentials touched.</p>
-      <div id="counter-swarm-log" class="bg-surface rounded-lg divide-y divide-gray-800"></div>
-    </section>
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold mb-3">Agents</h2>
+        <div class="bg-surface rounded-lg divide-y divide-gray-800">
+          <div class="grid grid-cols-3 gap-4 p-3 text-xs font-semibold text-gray-500 uppercase">
+            <span>Agent</span><span>Role</span><span>Guardrail</span>
+          </div>
+          <div id="agents-overview"></div>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold mb-3">Tools &amp; Stack</h2>
+        <div id="tools-grid" class="flex flex-wrap gap-2"></div>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold mb-3">Why this is safe to publish</h2>
+        <ul class="text-sm text-gray-400 space-y-1.5 list-disc list-inside max-w-2xl">
+          <li>Air-gapped — egress blocked at the host firewall, not just Docker network config</li>
+          <li>Every service reachable only from this one machine — no LAN or internet exposure</li>
+          <li>No real secrets required anywhere in the stack</li>
+          <li>No AI action ever executes without a deterministic policy check and human approval</li>
+        </ul>
+      </section>
+
+    </div>
+
+    <!-- ============================= LIVE DASHBOARD ============================= -->
+    <div id="view-dashboard" class="hidden">
+
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold mb-3">Agent Status</h2>
+        <div id="agent-status" class="grid gap-3 sm:grid-cols-2"></div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold mb-3">Active CVE Alerts</h2>
+        <div id="cve-alerts" class="bg-surface rounded-lg divide-y divide-gray-800"></div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold mb-3">Remediation Log</h2>
+        <div id="remediation-log" class="bg-surface rounded-lg divide-y divide-gray-800"></div>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold mb-3">Counter-Swarm: Active Defense Log</h2>
+        <p class="text-xs text-gray-500 mb-3">Simulated traffic vs. a defensive swarm — synthetic IPs, mock tokens/keys, local state file only. No real firewall or credentials touched.</p>
+        <div id="counter-swarm-log" class="bg-surface rounded-lg divide-y divide-gray-800"></div>
+      </section>
+
+    </div>
   </div>
 
   <script type="module" src="/src/main.js"></script>

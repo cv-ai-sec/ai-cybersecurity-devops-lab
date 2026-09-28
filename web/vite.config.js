@@ -9,7 +9,13 @@ import { defineConfig } from "vite";
 // boundary itself (only what's explicitly forwarded, or reachable via the
 // private host-only network, can reach this at all) — see
 // docs/INSTALL.md step 4.
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // GitHub Pages serves a project site at https://<user>.github.io/<repo>/,
+  // not the domain root — asset URLs need that prefix or they 404 once
+  // deployed. Only applied for `vite build` (what the Pages deploy workflow
+  // runs), not `vite dev`/`vite preview`, so local URLs from docs/INSTALL.md
+  // (http://<host-only-ip>:4321) keep working unchanged.
+  base: command === "build" ? "/ai-cybersecurity-devops-lab/" : "/",
   server: {
     host: "0.0.0.0",
     port: 4321,
@@ -20,4 +26,4 @@ export default defineConfig({
     port: 4321,
     strictPort: true,
   },
-});
+}));

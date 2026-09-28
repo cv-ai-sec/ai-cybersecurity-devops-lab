@@ -30,6 +30,61 @@ async function renderDiagram() {
   el.innerHTML = svg;
 }
 
+// Static, hand-maintained content for the Overview tab — mirrors README.md's
+// Agents table and stack list. Not fetched/derived from anything live, so it
+// doesn't belong in mockData.js alongside the simulated dashboard fixtures.
+const AGENTS_OVERVIEW = [
+  { name: "Deployment", role: "Runs Ansible, summarizes results", guardrail: "Dry-run by default" },
+  { name: "Telemetry", role: "Queries Loki, flags anomalies", guardrail: "Untrusted logs wrapped in containment tags; optional sandboxed inspection" },
+  { name: "Vulnerability", role: "Runs Trivy, triages via LLM", guardrail: "Summary grounded strictly in scan JSON" },
+  { name: "Remediation", role: "Proposes a fix for a finding", guardrail: "Deny-list check + mandatory human approval" },
+  { name: "Sandbox", role: "Isolated exec boundary for untrusted commands", guardrail: "No network, read-only root, dropped capabilities" },
+  { name: "Counter-Swarm", role: "Simulated attack vs. defense loop", guardrail: "Fully synthetic — local state file only" },
+];
+
+const TOOLS = [
+  "Docker", "LM Studio (Qwen)", "Open-WebUI", "Loki", "Promtail", "Trivy",
+  "Ansible", "Python", "Vite", "Tailwind CSS", "Mermaid.js", "Rocky Linux",
+];
+
+function renderAgentsOverview() {
+  const el = document.getElementById("agents-overview");
+  el.innerHTML = AGENTS_OVERVIEW.map(
+    (agent) => `
+    <div class="grid grid-cols-3 gap-4 p-3 text-sm">
+      <span class="font-medium">${agent.name}</span>
+      <span class="text-gray-400">${agent.role}</span>
+      <span class="text-gray-500 text-xs">${agent.guardrail}</span>
+    </div>`
+  ).join("");
+}
+
+function renderToolsGrid() {
+  const el = document.getElementById("tools-grid");
+  el.innerHTML = TOOLS.map(
+    (tool) => `<span class="bg-surface text-gray-300 text-xs px-3 py-1.5 rounded-full">${tool}</span>`
+  ).join("");
+}
+
+function setupTabs() {
+  const tabs = {
+    overview: { btn: document.getElementById("tab-overview"), view: document.getElementById("view-overview") },
+    dashboard: { btn: document.getElementById("tab-dashboard"), view: document.getElementById("view-dashboard") },
+  };
+
+  function activate(name) {
+    for (const [key, { btn, view }] of Object.entries(tabs)) {
+      const isActive = key === name;
+      btn.classList.toggle("active", isActive);
+      view.classList.toggle("hidden", !isActive);
+    }
+  }
+
+  tabs.overview.btn.addEventListener("click", () => activate("overview"));
+  tabs.dashboard.btn.addEventListener("click", () => activate("dashboard"));
+  activate("overview");
+}
+
 function renderAgentStatus() {
   const el = document.getElementById("agent-status");
   el.innerHTML = getAgentStatuses()
@@ -100,12 +155,15 @@ function renderCounterSwarmLog() {
 
 async function refreshAll() {
   await renderDiagram();
+  renderAgentsOverview();
+  renderToolsGrid();
   renderAgentStatus();
   renderCveAlerts();
   renderRemediationLog();
   renderCounterSwarmLog();
 }
 
+setupTabs();
 refreshAll();
 // Simulated on-demand refresh, matching the "refreshable views" requirement
 // without an actual backend poll loop.
