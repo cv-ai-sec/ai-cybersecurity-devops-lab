@@ -9,6 +9,10 @@ Runs inside a VirtualBox Rocky Linux 9 VM, with LM Studio staying on the Windows
 GPU directly — see [docs/INSTALL.md](docs/INSTALL.md) for why and the full setup (WSL2 also works
 if your Windows install doesn't have a broken servicing stack; this guide covers the VM path).
 
+**[→ Live dashboard](https://cv-ai-sec.github.io/ai-cybersecurity-devops-lab/)** — a static build of
+the dashboard below, viewable without running any of this yourself (see
+[Publishing the dashboard](#publishing-the-dashboard-github-pages)).
+
 ## Mission
 
 Build hands-on fluency in AI-assisted DevOps security workflows — deployment automation, log
@@ -69,6 +73,24 @@ python counter_swarm.py                       # Step 3: simulated counter-swarm 
 cd ../web && npm install && npm run dev   # http://127.0.0.1:4321
 ```
 
+## Publishing the dashboard (GitHub Pages)
+
+The dashboard (`web/`) is entirely static — both its Overview tab and its "Live Dashboard" tab run
+on fixture data baked into the build (`web/src/lib/mockData.js`), not a live connection to your
+Docker stack or agents. That means it can be published as a real, always-on page — the kind of link
+you'd put in a LinkedIn profile — without anyone needing your VM, Docker, or LM Studio running.
+
+Published automatically via **GitHub Actions** (`.github/workflows/deploy-pages.yml`) — every push
+to `main` that touches `web/` triggers a build (`npm install && npm run build`) and publishes the
+result to GitHub Pages, no manual step required. Actions is free for public repos, and comfortably
+within the free tier for private ones at this scale (this build takes ~1-2 minutes; the free tier is
+2,000 minutes/month).
+
+**One-time setup:** on GitHub, go to **Settings → Pages** and set **Source** to **GitHub Actions**
+(not "Deploy from a branch"). After that, just push — the workflow handles the rest, and the page
+goes live at `https://cv-ai-sec.github.io/ai-cybersecurity-devops-lab/` within a minute or two of
+each push. Check the **Actions** tab on the repo to watch a deploy in progress or see past runs.
+
 ## Agents
 
 | Agent | Role | Guardrail |
@@ -81,7 +103,7 @@ cd ../web && npm install && npm run dev   # http://127.0.0.1:4321
 | Counter-Swarm (`agents/counter_swarm.py`) | Simulated attacker traffic vs. a defensive swarm that "blocks" IPs and "rotates" mock tokens/keys | Fully synthetic — writes only to a local, git-ignored JSON state file, never touches a real firewall or credential |
 
 These guardrails aren't decorative — they're the same lessons red-teamed and validated in the
-companion [`Cybersecurity_AI_Learning`](https://github.com/TestPern1/Cybersecurity_AI_Learning)
+companion [`Cybersecurity_AI_Learning`](https://github.com/cv-ai-sec/Cybersecurity_AI_Learning)
 repo: schema/output validation isn't correctness validation, untrusted data needs structural
 containment, and an LLM with tool access needs least-privilege scoping plus a human gate.
 
