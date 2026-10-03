@@ -8,6 +8,7 @@ served by LM Studio.
 Runs inside a VirtualBox Rocky Linux 9 VM, with LM Studio staying on the Windows host to use its
 GPU directly — see [docs/INSTALL.md](docs/INSTALL.md) for why and the full setup (WSL2 also works
 if your Windows install doesn't have a broken servicing stack; this guide covers the VM path).
+Already running and just need a URL or a command? See [docs/USER-GUIDE.md](docs/USER-GUIDE.md).
 
 **[→ Live dashboard](https://cv-ai-sec.github.io/ai-cybersecurity-devops-lab/)** — a static build of
 the dashboard below, viewable without running any of this yourself (see
