@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-panel text-gray-100;
+}
+
+.tab-btn {
+  @apply text-gray-400 hover:text-gray-200 transition-colors;
+}
+.tab-btn.active {
+  @apply bg-accent text-panel hover:text-panel;
+}
